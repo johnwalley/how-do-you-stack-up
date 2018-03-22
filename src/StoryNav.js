@@ -10,11 +10,12 @@ const Container = styled.div`
 const Count = styled.div`
   font-weight: bold;
   margin-right: 10px;
-  font-size: 22px;
+  font-size: 20px;
 `;
 
 const Caption = styled.div`
   flex: 1;
+  font-size: 14px;
 `;
 
 const ButtonContainer = styled.div`

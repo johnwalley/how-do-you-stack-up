@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { Form, FormGroup, Input, Label } from 'reactstrap';
 import styled from 'styled-components';
 import * as d3 from 'd3';
 import {
@@ -26,17 +27,13 @@ const SVG = styled.svg`
   vertical-align: bottom;
 `;
 
-const Input = styled.input`
-  position: absolute;
-`;
-
 let resize = false;
 
 class Chart extends Component {
   constructor(props) {
     super(props);
 
-    this.state = { search: '' };
+    this.state = { search: 'City of' };
   }
 
   componentDidMount() {
@@ -70,7 +67,7 @@ class Chart extends Component {
       })
       .entries(results);
 
-    const marginTop = 60;
+    const marginTop = 30;
     const marginBottom = 70;
     const marginRight = 60;
     const marginLeft = 110;
@@ -120,7 +117,16 @@ class Chart extends Component {
       );
     };
 
-    drawCanvas(this.canvas, this.props.highlights);
+    // TODO: make this case insensitive
+    const highlights = this.props.searchEnabled
+      ? this.state.search.length > 2
+        ? results
+            .filter(d => d.name.indexOf(this.state.search) !== -1)
+            .map(d => ({ index: d.finish, year: d.year }))
+        : []
+      : this.props.highlights;
+
+    drawCanvas(this.canvas, highlights);
     drawSVG(this.svg, this.props.annotations);
 
     function drawCanvas(canvas, highlights) {
@@ -137,7 +143,7 @@ class Chart extends Component {
 
       context.textAlign = 'center';
       context.textBaseline = 'top';
-      context.font = '18px sans-serif';
+      context.font = '16px sans-serif';
       context.strokeStyle = 'darkgrey';
 
       context.strokeStyle = 'rgba(109,116,119,0.3)';
@@ -172,7 +178,7 @@ class Chart extends Component {
           x(
             nestedResults.find(function(d) {
               return +d.key === h.year;
-            }).values[h.index].time
+            }).values[h.index - 1].time
           ),
           y(h.year)
         );
@@ -180,13 +186,27 @@ class Chart extends Component {
           x(
             nestedResults.find(function(d) {
               return +d.key === h.year;
-            }).values[h.index].time
+            }).values[h.index - 1].time
           ),
           y(h.year) + y.bandwidth()
         );
         context.stroke();
+
+        context.fillStyle = '#E8336D';
+        context.fillText(
+          nestedResults.find(function(d) {
+            return +d.key === h.year;
+          }).values[h.index - 1].name,
+          x(
+            nestedResults.find(function(d) {
+              return +d.key === h.year;
+            }).values[h.index - 1].time
+          ),
+          y(h.year) - 18
+        );
       });
 
+      context.fillStyle = 'darkgrey';
       context.strokeStyle = 'rgba(109,116,119,0.3)';
       context.lineWidth = 2;
 
@@ -223,11 +243,11 @@ class Chart extends Component {
           x: x(
             nestedResults.find(function(d) {
               return +d.key === h.year;
-            }).values[h.index].time
+            }).values[h.index - 1].time
           ),
           y: y(h.year) + y.bandwidth() / 2,
-          dx: 200,
-          dy: 100,
+          dx: width / 5,
+          dy: h.dy * y.step(),
           color: '#E8336D',
         };
       });
@@ -255,20 +275,36 @@ class Chart extends Component {
         .select(svgElement)
         .selectAll('text')
         .style('stroke', 'white')
-        .style('stroke-width', '2px')
+        .style('stroke-width', '4px')
         .style('paint-order', 'stroke fill');
-
-      resize = true;
     }
   }
 
   handleChange = event => {
+    console.log(event);
     this.setState({ search: event.target.value });
   };
 
   render() {
     return (
       <Container>
+        {this.props.searchEnabled ? (
+          <Form inline style={{ position: 'absolute' }}>
+            <FormGroup className="mb-2 mr-sm-2 mb-sm-0">
+              <Label for="search" className="mr-sm-2">
+                Club or crew name
+              </Label>
+              <Input
+                type="email"
+                name="search"
+                id="search"
+                placeholder="Type here..."
+                value={this.state.search}
+                onChange={this.handleChange}
+              />
+            </FormGroup>
+          </Form>
+        ) : null}
         <Canvas
           innerRef={canvas => {
             this.canvas = canvas;
@@ -278,11 +314,6 @@ class Chart extends Component {
           innerRef={svg => {
             this.svg = svg;
           }}
-        />
-        <Input
-          type="text"
-          value={this.state.search}
-          onChange={this.handleChange}
         />
       </Container>
     );
