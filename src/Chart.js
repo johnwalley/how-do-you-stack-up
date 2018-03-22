@@ -33,7 +33,7 @@ class Chart extends Component {
   constructor(props) {
     super(props);
 
-    this.state = { search: 'City of' };
+    this.state = { search: '' };
   }
 
   componentDidMount() {
@@ -67,9 +67,9 @@ class Chart extends Component {
       })
       .entries(results);
 
-    const marginTop = 30;
-    const marginBottom = 70;
-    const marginRight = 60;
+    const marginTop = 10;
+    const marginBottom = 50;
+    const marginRight = 20;
     const marginLeft = 110;
 
     const x = d3
@@ -105,7 +105,8 @@ class Chart extends Component {
           d3.max(results, function(d) {
             return d.time;
           }) / 60
-        ) + 1
+        ) + 1,
+        width < 700 ? 2 : 1
       )
       .map(function(d) {
         return 60 * d;
@@ -148,6 +149,7 @@ class Chart extends Component {
 
       context.strokeStyle = 'rgba(109,116,119,0.3)';
       context.lineWidth = 2;
+      context.textBaseline = 'middle';
 
       nestedResults.forEach(function(year, yearIndex) {
         context.fillStyle = '#f8fbfc';
@@ -192,6 +194,7 @@ class Chart extends Component {
         );
         context.stroke();
 
+        /*
         context.fillStyle = '#E8336D';
         context.fillText(
           nestedResults.find(function(d) {
@@ -204,6 +207,7 @@ class Chart extends Component {
           ),
           y(h.year) - 18
         );
+        */
       });
 
       context.fillStyle = 'darkgrey';
@@ -222,8 +226,8 @@ class Chart extends Component {
       });
 
       context.font = '14px sans-serif';
-      context.fillText('< Faster times', x.range()[0], y.range()[1] + 40);
-      context.fillText('Slower times >', x.range()[1] - 40, y.range()[1] + 40);
+      context.fillText('< Faster times', x.range()[0], y.range()[1] + 30);
+      context.fillText('Slower times >', x.range()[1] - 40, y.range()[1] + 30);
     }
 
     function drawSVG(svgElement, annotations) {
@@ -288,23 +292,6 @@ class Chart extends Component {
   render() {
     return (
       <Container>
-        {this.props.searchEnabled ? (
-          <Form inline style={{ position: 'absolute' }}>
-            <FormGroup className="mb-2 mr-sm-2 mb-sm-0">
-              <Label for="search" className="mr-sm-2">
-                Club or crew name
-              </Label>
-              <Input
-                type="email"
-                name="search"
-                id="search"
-                placeholder="Type here..."
-                value={this.state.search}
-                onChange={this.handleChange}
-              />
-            </FormGroup>
-          </Form>
-        ) : null}
         <Canvas
           innerRef={canvas => {
             this.canvas = canvas;
@@ -315,6 +302,34 @@ class Chart extends Component {
             this.svg = svg;
           }}
         />
+        {this.props.searchEnabled ? (
+          <Form
+            inline
+            style={{
+              position: 'absolute',
+              right: 0,
+              top: 0,
+              paddingRight: 5,
+              paddingTop: 16,
+            }}
+          >
+            <FormGroup className="mb-2 mr-sm-2 mb-sm-0">
+              <Input
+                type="search"
+                name="search"
+                id="search"
+                placeholder="Type here..."
+                value={this.state.search}
+                onChange={this.handleChange}
+                onKeyPress={event => {
+                  if (event.which === 13) {
+                    event.preventDefault();
+                  }
+                }}
+              />
+            </FormGroup>
+          </Form>
+        ) : null}
       </Container>
     );
   }

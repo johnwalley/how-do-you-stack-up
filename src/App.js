@@ -22,7 +22,7 @@ const chapters = [
     annotations: [
       {
         title: `Each line represents a crew's finish time`,
-        label: `York University Boat Club finished with a time of 20:37.8 placing them 93rd in 2014`,
+        label: `For example in 2014 York University Boat Club finished with a time of 20:37.8 placing them 93rd`,
         index: 93,
         year: 2014,
         dy: -1,
@@ -114,7 +114,7 @@ const chapters = [
     searchEnabled: false,
   },
   {
-    caption: `Take a look at your club using the search box below`,
+    caption: `Take a look at your club using the search box below. Hover over or touch a crew to see details`,
     highlights: [],
     annotations: [],
     searchEnabled: true,

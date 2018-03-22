@@ -13,12 +13,13 @@ const Container = styled.div`
   height: 40px;
   display: flex;
   align-items: center;
+  padding-right: 5px;
 `;
 
 const Title = styled.div`
   flex: 1;
   font-weight: bold;
-  font-size: 28px;
+  font-size: 22px;
   text-align: center;
 `;
 
@@ -29,14 +30,23 @@ class Header extends Component {
     return (
       <Container>
         <Title>How do you stack up?</Title>
-        <FacebookShareButton url={shareUrl}>
-          <FacebookIcon size={32} round />
+        <FacebookShareButton
+          url={shareUrl}
+          style={{ marginLeft: 5, cursor: 'pointer' }}
+        >
+          <FacebookIcon size={22} round />
         </FacebookShareButton>
-        <TwitterShareButton url={shareUrl}>
-          <TwitterIcon size={32} round />
+        <TwitterShareButton
+          url={shareUrl}
+          style={{ marginLeft: 5, cursor: 'pointer' }}
+        >
+          <TwitterIcon size={22} round />
         </TwitterShareButton>
-        <EmailShareButton url={shareUrl}>
-          <EmailIcon size={32} round />
+        <EmailShareButton
+          url={shareUrl}
+          style={{ marginLeft: 5, cursor: 'pointer' }}
+        >
+          <EmailIcon size={22} round />
         </EmailShareButton>
       </Container>
     );

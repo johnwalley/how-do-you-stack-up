@@ -22473,6 +22473,17 @@
     "Year": 2011
   },
   {
+    "Finish": 33,
+    "Start": 238,
+    "Name": "Bath University BC/ Clydesdale ARC/ Tees RC",
+    "Status": "Intermediate 3",
+    "Award": "",
+    "Penalties": "",
+    "Time": "20:05.9",
+    "Adjusted": "",
+    "Year": 2011
+  },
+  {
     "Finish": 34,
     "Start": 18,
     "Name": "Barnes Bridge Ladies RC A",
@@ -22822,6 +22833,17 @@
     "Penalties": "",
     "Time": "20:45.9",
     "Adjusted": "19:53.9",
+    "Year": 2011
+  },
+  {
+    "Finish": 66,
+    "Start": 253,
+    "Name": "Reading University BC C",
+    "Status": "Intermediate 3",
+    "Award": "University",
+    "Penalties": "",
+    "Time": "20:46.0",
+    "Adjusted": "",
     "Year": 2011
   },
   {
@@ -23573,6 +23595,17 @@
     "Year": 2011
   },
   {
+    "Finish": 135,
+    "Start": 59,
+    "Name": "Thames RC D",
+    "Status": "Novice",
+    "Award": "Club",
+    "Penalties": "",
+    "Time": "21:30.9",
+    "Adjusted": "",
+    "Year": 2011
+  },
+  {
     "Finish": 136,
     "Start": 59,
     "Name": "York University BC",
@@ -23943,6 +23976,17 @@
     "Award": "Academic",
     "Penalties": "",
     "Time": "21:51.9",
+    "Adjusted": "",
+    "Year": 2011
+  },
+  {
+    "Finish": 170,
+    "Start": 108,
+    "Name": "Manchester University BC B",
+    "Status": "Intermediate 3",
+    "Award": "University",
+    "Penalties": "",
+    "Time": "21:52.0",
     "Adjusted": "",
     "Year": 2011
   },
@@ -24321,6 +24365,17 @@
     "Year": 2011
   },
   {
+    "Finish": 205,
+    "Start": 242,
+    "Name": "Exeter RC",
+    "Status": "Intermediate 3",
+    "Award": "Provincial Club",
+    "Penalties": "",
+    "Time": "22:20.4",
+    "Adjusted": "",
+    "Year": 2011
+  },
+  {
     "Finish": 206,
     "Start": 178,
     "Name": "Royal Free & University College Medical School BC B",
@@ -24695,6 +24750,17 @@
     "Year": 2011
   },
   {
+    "Finish": 240,
+    "Start": 170,
+    "Name": "Warrington RC B",
+    "Status": "Intermediate 3",
+    "Award": "Provincial Club",
+    "Penalties": "",
+    "Time": "22:48.4",
+    "Adjusted": "",
+    "Year": 2011
+  },
+  {
     "Finish": 241,
     "Start": 302,
     "Name": "Wolfson College (Cambridge) BC",
@@ -25065,6 +25131,17 @@
     "Award": "Academic",
     "Penalties": "",
     "Time": "23:22.4",
+    "Adjusted": "",
+    "Year": 2011
+  },
+  {
+    "Finish": 275,
+    "Start": 140,
+    "Name": "Anglia Ruskin BC",
+    "Status": "Intermediate 3",
+    "Award": "University",
+    "Penalties": "",
+    "Time": "23:24.0",
     "Adjusted": "",
     "Year": 2011
   },

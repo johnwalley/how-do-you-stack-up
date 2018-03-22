@@ -1,10 +1,12 @@
 import React, { Component } from 'react';
 import styled from 'styled-components';
+import { Button, ButtonGroup } from 'reactstrap';
 
 const Container = styled.div`
   display: flex;
-  padding: 10px 15px 15px;
+  padding: 8px 10px 10px;
   background: #eee;
+  border-top: 1px solid darkgrey;
 `;
 
 const Count = styled.div`
@@ -16,14 +18,14 @@ const Count = styled.div`
 const Caption = styled.div`
   flex: 1;
   font-size: 14px;
+
+  @media (max-width: 700px) {
+    font-size: 12px;
+  }
 `;
 
 const ButtonContainer = styled.div`
   margin-left: auto;
-`;
-
-const StoryNavButton = styled.button`
-  font-size: 28px;
 `;
 
 const ProgressIndicator = styled.div`
@@ -46,18 +48,22 @@ class StoryNav extends Component {
           <Count>{`${this.props.count}/${this.props.total}`}</Count>
           <Caption>{this.props.caption}</Caption>
           <ButtonContainer>
-            <StoryNavButton
-              onClick={this.props.handleMoveBackwards}
-              disabled={this.props.count === 1}
-            >
-              &lt;
-            </StoryNavButton>
-            <StoryNavButton
-              onClick={this.props.handleMoveForwards}
-              disabled={this.props.count === this.props.total}
-            >
-              &gt;
-            </StoryNavButton>
+            <ButtonGroup>
+              <Button
+                color="secondary"
+                onClick={this.props.handleMoveBackwards}
+                disabled={this.props.count === 1}
+              >
+                &lt;
+              </Button>
+              <Button
+                color="secondary"
+                onClick={this.props.handleMoveForwards}
+                disabled={this.props.count === this.props.total}
+              >
+                &gt;
+              </Button>
+            </ButtonGroup>
           </ButtonContainer>
         </Container>
         <ProgressIndicator>
