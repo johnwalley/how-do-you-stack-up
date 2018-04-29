@@ -54,6 +54,15 @@ const StyledButton = styled(Button)`
   }
 `;
 
+const StyledInput = styled(Input)`
+  font-size: 1rem;
+  margin-top: 5px;
+
+  @media (max-width: 700px) {
+    font-size: 12px;
+  }
+`;
+
 class StoryNav extends Component {
   render() {
     return (
@@ -65,13 +74,12 @@ class StoryNav extends Component {
             {this.props.searchEnabled ? (
               <Form inline style={{}}>
                 <FormGroup className="mb-2 mr-sm-2 mb-sm-0">
-                  <Input
+                  <StyledInput
                     type="search"
                     name="search"
                     id="search"
                     placeholder="Type here..."
                     value={this.props.search}
-                    style={{ marginTop: 5, fontSize: 14 }}
                     onChange={this.props.handleSearchChange}
                     onKeyPress={event => {
                       if (event.which === 13) {
