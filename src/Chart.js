@@ -1,10 +1,8 @@
 import React, { Component } from 'react';
-import { Form, FormGroup, Input, Label } from 'reactstrap';
 import styled from 'styled-components';
 import * as d3 from 'd3';
 import {
   annotation,
-  annotationCalloutRect,
   annotationCustomType,
   annotationLabel,
 } from 'd3-svg-annotation';
@@ -27,15 +25,7 @@ const SVG = styled.svg`
   vertical-align: bottom;
 `;
 
-let resize = false;
-
 class Chart extends Component {
-  constructor(props) {
-    super(props);
-
-    this.state = { search: '' };
-  }
-
   componentDidMount() {
     this.draw();
   }
@@ -106,7 +96,7 @@ class Chart extends Component {
             return d.time;
           }) / 60
         ) + 1,
-        width < 700 ? 2 : 1
+        width < 700 ? 4 : 1
       )
       .map(function(d) {
         return 60 * d;
@@ -120,9 +110,9 @@ class Chart extends Component {
 
     // TODO: make this case insensitive
     const highlights = this.props.searchEnabled
-      ? this.state.search.length > 2
+      ? this.props.search.length > 2
         ? results
-            .filter(d => d.name.indexOf(this.state.search) !== -1)
+            .filter(d => d.name.indexOf(this.props.search) !== -1)
             .map(d => ({ index: d.finish, year: d.year }))
         : []
       : this.props.highlights;
@@ -144,7 +134,7 @@ class Chart extends Component {
 
       context.textAlign = 'center';
       context.textBaseline = 'top';
-      context.font = '16px sans-serif';
+      context.font = width < 700 ? '12px sans-serif' : '16px sans-serif';
       context.strokeStyle = 'darkgrey';
 
       context.strokeStyle = 'rgba(109,116,119,0.3)';
@@ -258,7 +248,7 @@ class Chart extends Component {
 
       const makeAnnotations = annotation()
         .type(type)
-        .textWrap(333)
+        .textWrap(width / 320 * 150)
         .annotations(updatedAnnotations);
 
       const svg = d3
@@ -266,7 +256,10 @@ class Chart extends Component {
         .attr('width', width)
         .attr('height', height);
 
-      const g = svg.selectAll('.annotation-group').data([null]);
+      const g = svg
+        .selectAll('.annotation-group')
+        .style('font-size', width < 700 ? 10 : '1rem')
+        .data([null]);
 
       g
         .enter()
@@ -284,11 +277,6 @@ class Chart extends Component {
     }
   }
 
-  handleChange = event => {
-    console.log(event);
-    this.setState({ search: event.target.value });
-  };
-
   render() {
     return (
       <Container>
@@ -302,34 +290,6 @@ class Chart extends Component {
             this.svg = svg;
           }}
         />
-        {this.props.searchEnabled ? (
-          <Form
-            inline
-            style={{
-              position: 'absolute',
-              right: 0,
-              top: 0,
-              paddingRight: 5,
-              paddingTop: 16,
-            }}
-          >
-            <FormGroup className="mb-2 mr-sm-2 mb-sm-0">
-              <Input
-                type="search"
-                name="search"
-                id="search"
-                placeholder="Type here..."
-                value={this.state.search}
-                onChange={this.handleChange}
-                onKeyPress={event => {
-                  if (event.which === 13) {
-                    event.preventDefault();
-                  }
-                }}
-              />
-            </FormGroup>
-          </Form>
-        ) : null}
       </Container>
     );
   }

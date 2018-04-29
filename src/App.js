@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import styled, { keyframes } from 'styled-components';
+import styled from 'styled-components';
 import Header from './Header';
 import StoryNav from './StoryNav';
 import Chart from './Chart';
@@ -9,10 +9,6 @@ const AppContainer = styled.div`
   display: flex;
   flex-direction: column;
   height: 100%;
-`;
-
-const Content = styled.div`
-  flex: 1;
 `;
 
 const chapters = [
@@ -134,8 +130,13 @@ class App extends Component {
       highlights: chapters[initialCount - 1].highlights,
       annotations: chapters[initialCount - 1].annotations,
       serchEnabled: chapters[initialCount - 1].searchEnabled,
+      search: '',
     };
   }
+
+  handleSearchChange = event => {
+    this.setState({ search: event.target.value });
+  };
 
   moveForwards = () => {
     const count = Math.min(this.state.count + 1, this.state.total);
@@ -167,13 +168,17 @@ class App extends Component {
           count={this.state.count}
           total={this.state.total}
           caption={this.state.caption}
+          searchEnabled={this.state.searchEnabled}
+          search={this.state.search}
           handleMoveForwards={this.moveForwards}
           handleMoveBackwards={this.moveBackwards}
+          handleSearchChange={this.handleSearchChange}
         />
         <Chart
           highlights={this.state.highlights}
           annotations={this.state.annotations}
           searchEnabled={this.state.searchEnabled}
+          search={this.state.search}
         />
         <Footer />
       </AppContainer>
