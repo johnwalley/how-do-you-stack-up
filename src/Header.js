@@ -29,7 +29,7 @@ class Header extends Component {
   render() {
     return (
       <Container>
-        <Title>How do you stack up?</Title>
+        <Title>{this.props.children}</Title>
         <FacebookShareButton
           url={shareUrl}
           style={{ marginLeft: 5, cursor: 'pointer' }}
