@@ -26,6 +26,12 @@ const SVG = styled.svg`
 `;
 
 class Chart extends Component {
+  constructor(props) {
+    super(props);
+    this.canvas = React.createRef();
+    this.svg = React.createRef();
+  }
+
   componentDidMount() {
     this.draw();
   }
@@ -117,8 +123,8 @@ class Chart extends Component {
         : []
       : this.props.highlights;
 
-    drawCanvas(this.canvas, highlights);
-    drawSVG(this.svg, this.props.annotations);
+    drawCanvas(this.canvas.current, highlights);
+    drawSVG(this.svg.current, this.props.annotations);
 
     function drawCanvas(canvas, highlights) {
       const context = canvas.getContext('2d');
@@ -183,21 +189,6 @@ class Chart extends Component {
           y(h.year) + y.bandwidth()
         );
         context.stroke();
-
-        /*
-        context.fillStyle = '#E8336D';
-        context.fillText(
-          nestedResults.find(function(d) {
-            return +d.key === h.year;
-          }).values[h.index - 1].name,
-          x(
-            nestedResults.find(function(d) {
-              return +d.key === h.year;
-            }).values[h.index - 1].time
-          ),
-          y(h.year) - 18
-        );
-        */
       });
 
       context.fillStyle = 'darkgrey';
@@ -248,7 +239,7 @@ class Chart extends Component {
 
       const makeAnnotations = annotation()
         .type(type)
-        .textWrap(width / 320 * 150)
+        .textWrap((width / 320) * 150)
         .annotations(updatedAnnotations);
 
       const svg = d3
@@ -261,15 +252,13 @@ class Chart extends Component {
         .style('font-size', width < 700 ? 10 : '1rem')
         .data([null]);
 
-      g
-        .enter()
+      g.enter()
         .append('g')
         .attr('class', 'annotation-group');
 
       g.call(makeAnnotations);
 
-      d3
-        .select(svgElement)
+      d3.select(svgElement)
         .selectAll('text')
         .style('stroke', 'white')
         .style('stroke-width', '4px')
@@ -280,16 +269,8 @@ class Chart extends Component {
   render() {
     return (
       <Container>
-        <Canvas
-          innerRef={canvas => {
-            this.canvas = canvas;
-          }}
-        />
-        <SVG
-          innerRef={svg => {
-            this.svg = svg;
-          }}
-        />
+        <Canvas ref={this.canvas} />
+        <SVG ref={this.svg} />
       </Container>
     );
   }
