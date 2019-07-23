@@ -13,7 +13,7 @@ class Footer extends Component {
   render() {
     return (
       <Container>
-        <p style={{ color: 'white', margin: 0 }}>© 2018</p>
+        <p style={{ color: 'white', margin: 0 }}>© 2018-2019</p>
         <a
           href="https://www.mulberryhousesoftware.com"
           style={{ color: 'white', marginLeft: 4 }}
