@@ -14,15 +14,17 @@ const Count = styled.div`
   font-weight: bold;
   margin-right: 10px;
   font-size: 20px;
+  line-height: 20px;
 `;
 
 const CaptionContainer = styled.div`
   display: flex;
   flex-direction: column;
+  justify-content: start;
 `;
 
 const Caption = styled.div`
-  flex: 1;
+  flex: 0 0 auto;
   font-size: 14px;
 
   @media (max-width: 700px) {
