@@ -1,6 +1,7 @@
-import React, { Component } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import * as d3 from 'd3';
+import { leastIndex } from 'd3-array';
 import {
   annotation,
   annotationCustomType,
@@ -23,105 +24,130 @@ const SVG = styled.svg`
   position: absolute;
   height: 100%;
   vertical-align: bottom;
+  pointer-events: none;
 `;
 
-class Chart extends Component {
-  constructor(props) {
-    super(props);
-    this.canvas = React.createRef();
-    this.svg = React.createRef();
-  }
+const results = rawResults.map(d => {
+  const time = d3.timeParse('%M:%S.%L')(d.Time);
 
-  componentDidMount() {
-    this.draw();
-  }
+  return {
+    finish: +d.Finish,
+    start: +d.Start,
+    name: d.Name,
+    time: 60 * time.getMinutes() + time.getSeconds(),
+    year: +d.Year,
+  };
+});
 
-  componentDidUpdate() {
-    this.draw();
-  }
+const nestedResults = d3
+  .nest()
+  .key(function(d) {
+    return d.year;
+  })
+  .entries(results);
 
-  draw() {
-    const width = this.props.size.width;
-    const height = this.props.size.height;
+function scaleBandInvert(scale) {
+  var domain = scale.domain();
+  var paddingOuter = scale(domain[0]);
+  var eachBand = scale.step();
 
-    const results = rawResults.map(d => {
-      const time = d3.timeParse('%M:%S.%L')(d.Time);
+  return function(value) {
+    var index = Math.floor((value - paddingOuter) / eachBand);
+    return domain[Math.max(0, Math.min(index, domain.length - 1))];
+  };
+}
 
-      return {
-        finish: +d.Finish,
-        start: +d.Start,
-        name: d.Name,
-        time: 60 * time.getMinutes() + time.getSeconds(),
-        year: +d.Year,
-      };
+const tickFormat = function(d) {
+  return d3.format('2d')(Math.floor(d / 60)) + ':' + d3.format('02d')(d % 60);
+};
+
+const Chart = ({
+  size: { width, height },
+  annotations,
+  highlights,
+  search,
+  searchEnabled,
+}) => {
+  const canvas = useRef(null);
+  const svg = useRef(null);
+  const [hover, setHover] = useState([]);
+
+  const marginTop = 10;
+  const marginBottom = 50;
+  const marginRight = 24;
+  const marginLeft = width < 700 ? 42 : 52;
+
+  const tickValues = d3
+    .range(
+      Math.floor(
+        d3.min(results, function(d) {
+          return d.time;
+        }) / 60
+      ),
+      Math.ceil(
+        d3.max(results, function(d) {
+          return d.time;
+        }) / 60
+      ) + 1,
+      width < 700 ? 4 : 1
+    )
+    .map(function(d) {
+      return 60 * d;
     });
 
-    const nestedResults = d3
-      .nest()
-      .key(function(d) {
+  const x = d3
+    .scaleLinear()
+    .range([marginLeft, width - marginRight])
+    .domain(d3.extent(tickValues));
+
+  const y = d3
+    .scaleBand()
+    .range([marginTop, height - marginBottom])
+    .domain(
+      results.map(function(d) {
         return d.year;
       })
-      .entries(results);
+    )
+    .padding(0.3);
 
-    const marginTop = 10;
-    const marginBottom = 50;
-    const marginRight = 24;
-    const marginLeft = width < 700 ? 42 : 52;
+  const handleMouseMove = (event, xScale, yScale) => {
+    const rect = canvas.current.getBoundingClientRect();
+    const x = event.clientX - rect.left;
+    const y = event.clientY - rect.top;
 
-    const tickValues = d3
-      .range(
-        Math.floor(
-          d3.min(results, function(d) {
-            return d.time;
-          }) / 60
-        ),
-        Math.ceil(
-          d3.max(results, function(d) {
-            return d.time;
-          }) / 60
-        ) + 1,
-        width < 700 ? 4 : 1
-      )
-      .map(function(d) {
-        return 60 * d;
-      });
+    const year = scaleBandInvert(yScale)(y);
 
-    const x = d3
-      .scaleLinear()
-      .range([marginLeft, width - marginRight])
-      .domain(d3.extent(tickValues));
+    const index = leastIndex(
+      results.filter(d => d.year === year),
+      (a, b) =>
+        Math.abs(a.time - xScale.invert(x)) -
+        Math.abs(b.time - xScale.invert(x))
+    );
 
-    const y = d3
-      .scaleBand()
-      .range([marginTop, height - marginBottom])
-      .domain(
-        results.map(function(d) {
-          return d.year;
-        })
-      )
-      .padding(0.3);
+    const club = results.filter(d => d.year === year)[index];
 
-    const tickFormat = function(d) {
-      return (
-        d3.format('2d')(Math.floor(d / 60)) + ':' + d3.format('02d')(d % 60)
-      );
-    };
+    const clubs = results
+      .filter(d => d.year === year)
+      .filter(d => d.time === club.time);
 
-    const highlights = this.props.searchEnabled
-      ? this.props.search.length > 2
-        ? results
-            .filter(
-              d =>
-                d.name
-                  .toLowerCase()
-                  .indexOf(this.props.search.toLowerCase()) !== -1
-            )
-            .map(d => ({ index: d.finish, year: d.year }))
-        : []
-      : this.props.highlights;
+    setHover(clubs);
+  };
 
-    drawCanvas(this.canvas.current, highlights);
-    drawSVG(this.svg.current, this.props.annotations);
+  useEffect(() => {
+    drawCanvas(
+      canvas.current,
+      searchEnabled
+        ? search.length > 2
+          ? results
+              .filter(
+                d => d.name.toLowerCase().indexOf(search.toLowerCase()) !== -1
+              )
+              .map(d => ({ index: d.finish, year: d.year }))
+          : []
+        : highlights
+    );
+
+    drawSVG(svg.current, annotations);
 
     function drawCanvas(canvas, highlights) {
       const context = canvas.getContext('2d');
@@ -192,6 +218,13 @@ class Chart extends Component {
         context.stroke();
       });
 
+      hover.forEach(function(h, i) {
+        context.beginPath();
+        context.moveTo(x(h.time), y(h.year));
+        context.lineTo(x(h.time), y(h.year) + y.bandwidth());
+        context.stroke();
+      });
+
       context.fillStyle = 'darkgrey';
       context.strokeStyle = 'rgba(109,116,119,0.3)';
       context.lineWidth = 2;
@@ -218,7 +251,7 @@ class Chart extends Component {
       const type = annotationCustomType(annotationLabel, {
         className: 'custom',
         connector: { end: 'dot' },
-        note: { align: 'middle' },
+        note: { align: 'middle', orientation: 'leftRight' },
       });
 
       const updatedAnnotations = annotations.map(function(h, i) {
@@ -239,6 +272,20 @@ class Chart extends Component {
           color: '#E8336D',
         };
       });
+
+      if (hover.length) {
+        updatedAnnotations.push({
+          note: {
+            title: `${tickFormat(hover[0].time)}`,
+            label: hover.map(d => `${d.name}`),
+          },
+          x: x(hover[0].time),
+          y: y(hover[0].year) + y.bandwidth() / 2,
+          dx: x(hover[0].time) > width / 2 ? -8 : 8,
+          dy: 0,
+          color: '#E8336D',
+        });
+      }
 
       const makeAnnotations = annotation()
         .type(type)
@@ -267,16 +314,30 @@ class Chart extends Component {
         .style('stroke-width', '4px')
         .style('paint-order', 'stroke fill');
     }
-  }
+  }, [
+    tickValues,
+    x,
+    y,
+    width,
+    height,
+    annotations,
+    highlights,
+    hover,
+    marginLeft,
+    search,
+    searchEnabled,
+  ]);
 
-  render() {
-    return (
-      <Container>
-        <Canvas ref={this.canvas} />
-        <SVG ref={this.svg} />
-      </Container>
-    );
-  }
-}
+  return (
+    <Container>
+      <Canvas
+        ref={canvas}
+        onMouseMove={e => handleMouseMove(e, x, y)}
+        onMouseLeave={e => setHover([])}
+      />
+      <SVG ref={svg} />
+    </Container>
+  );
+};
 
 export default sizeMe({ monitorHeight: true })(Chart);
