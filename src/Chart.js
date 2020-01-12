@@ -277,7 +277,7 @@ const Chart = ({
         updatedAnnotations.push({
           note: {
             title: `${tickFormat(hover[0].time)}`,
-            label: hover.map(d => `${d.name}`),
+            label: hover.map(d => `${d.name}`).join(', '),
           },
           x: x(hover[0].time),
           y: y(hover[0].year) + y.bandwidth() / 2,
